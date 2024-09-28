@@ -1,14 +1,16 @@
 import { type Request, type Response, Router } from "express";
 import { registerSchema, loginSchema } from "./v1.validation";
 import { db } from "../../db/db";
-import { users } from "../../db/index";
-import { eq, or } from "drizzle-orm";
+import { users, todos } from "../../db/index";
+import { eq, or, and } from "drizzle-orm";
 import argon2 from "argon2";
 import { createAccessToken } from "../../utils/jwt";
 import { env } from "../../env";
 import { authenticated } from "../../middlewares/auth";
 
 const v1 = Router();
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 v1.post("/register", async (req: Request, res: Response) => {
   const { data, success } = await registerSchema.safeParseAsync(req.body);
@@ -174,6 +176,88 @@ v1.get("/me", authenticated, async (req: Request, res: Response) => {
   res.status(200).json({
     code: "OK",
     data: user,
+  });
+});
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+v1.get("/todos", authenticated, async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+
+  const userTodos = await db
+    .select({
+      id: todos.id,
+      title: todos.title,
+      content: todos.content,
+    })
+    .from(todos)
+    .where(eq(todos.userId, userId))
+    .execute();
+
+  res.status(200).json({
+    code: "OK",
+    data: userTodos,
+  });
+});
+
+v1.post("/todos", authenticated, async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+
+  const { title, content } = req.body;
+
+  try {
+    const inserted = await db
+      .insert(todos)
+      .values({
+        title,
+        content,
+        userId,
+      })
+      .returning()
+      .execute();
+
+    res.status(201).json({
+      code: "CREATED",
+      message: "Todo added successfully",
+      data: inserted[0],
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      code: "INTERNAL_SERVER_ERROR",
+      error: "Internal server error",
+      message: "Unexpected error occurred",
+    });
+  }
+});
+
+v1.delete("/todos/:id", authenticated, async (req: Request, res: Response) => {
+  const userId = (req as any).userId;
+  const todoId = parseInt(req.params.id, 10);
+
+  const todo = (
+    await db
+      .select({ id: todos.id, userId: todos.userId })
+      .from(todos)
+      .where(and(eq(todos.id, todoId), eq(todos.userId, userId)))
+      .limit(1)
+      .execute()
+  )[0];
+
+  if (!todo) {
+    res.status(404).json({
+      code: "NOT_FOUND",
+      error: "Todo not found",
+      message: "Todo not found",
+    });
+    return;
+  }
+
+  await db.delete(todos).where(eq(todos.id, todoId)).execute();
+
+  res.status(200).json({
+    code: "OK",
+    message: "Todo deleted successfully",
   });
 });
 

@@ -29,6 +29,12 @@ const Layout: FC<Props> = ({ children, protectedPage = false }) => {
             ) : (
               <Redirect to="/login" replace />
             )
+          ) : isLoading ? (
+            <section className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+              <LucideLoader2 className="h-9 w-9 animate-spin text-black" />
+            </section>
+          ) : user ? (
+            <Redirect to="/todos" replace />
           ) : (
             children
           )}
