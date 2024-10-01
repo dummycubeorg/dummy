@@ -8,26 +8,8 @@ import AddTodoDialog, {
 } from "@/components/domain/add-todo-dialog";
 import useSWR from "swr";
 import { Button } from "@/components/ui/button";
-import { Todo } from "@/lib/types";
+import type { Todo } from "@/lib/types";
 import ky from "ky";
-
-const todos: Array<{ id: number; title: string; content: string }> = [
-  {
-    id: 1,
-    title: "Buy groceries",
-    content: "Milk, bread, eggs, and bananas",
-  },
-  {
-    id: 2,
-    title: "Pay bills",
-    content: "Electricity, water, and internet",
-  },
-  {
-    id: 3,
-    title: "Call mom",
-    content: "Wish her a happy birthday",
-  },
-];
 
 const Todo: FC<Todo & { userId: number }> = ({
   id,
