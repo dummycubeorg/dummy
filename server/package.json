@@ -5,7 +5,8 @@
   "scripts": {
     "db:migrate": "drizzle-kit generate && tsx --env-file=.env ./src/db/migrate.ts",
     "db:studio": "drizzle-kit studio",
-    "dev": "tsx --env-file=.env ./src/index.ts --watch"
+    "dev": "tsx --env-file=.env ./src/index.ts --watch",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
