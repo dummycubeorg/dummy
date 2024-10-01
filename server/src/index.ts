@@ -14,6 +14,6 @@ app.use(express.json());
 
 app.use("/api/v1", v1Router);
 
-app.listen(env.PORT, () => {
+app.listen(env.PORT, env.HOST, () => {
   console.log(`Server running on port ${env.PORT}...`);
 });
