@@ -13,7 +13,7 @@ env:
 
 jobs:
   server-test:
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
