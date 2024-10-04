@@ -39,7 +39,15 @@ jobs:
         run: |
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d '{"content": "The tests run successfully!"}' \
+               -d '{
+                    "embeds": [
+                      {
+                        "title": "Deployment Notification",
+                        "description": "A push event has occurred on the main branch!",
+                        "color": 65280  # Green color in decimal
+                      }
+                    ]
+                  }' \
                ${{ secrets.DISCORD_WEBHOOK }}
 
 
