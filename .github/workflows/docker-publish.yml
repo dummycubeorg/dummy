@@ -34,6 +34,15 @@ jobs:
         run: |
           cd server
           npm test
+          exit 1
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{"content": "The tests are Failed!"}' \
+               ${{ secrets.DISCORD_WEBHOOK }}
 
       - name: Send Discord notification
         run: |
