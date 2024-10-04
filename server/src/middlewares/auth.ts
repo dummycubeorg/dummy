@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { verifyAccessToken } from "../utils/jwt";
+import { verifyAccessToken } from "../utils/jwt/verify-token";
+import { env } from "../env";
+
+const JWT_SECRET = new TextEncoder().encode(env.JWT_SECRET);
 
 export async function authenticated(
   req: Request,
@@ -24,7 +27,7 @@ export async function authenticated(
     return;
   }
 
-  const decoded = await verifyAccessToken(token);
+  const decoded = await verifyAccessToken(token, JWT_SECRET);
 
   if (!decoded) {
     res.status(401).json({
