@@ -10,7 +10,10 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/DEPI-todo
+  DOCKER_USERNAME: vhmds
+  DOCKER_PASSWORD: Vhmeds_74
+  IMAGE_NAME: ${{ env.DOCKER_USERNAME }}/DEPI-todo
+  
 
 jobs:
   build:
@@ -39,8 +42,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
 
       - name: Extract Docker metadata
         id: meta
