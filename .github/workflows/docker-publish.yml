@@ -81,6 +81,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      
+      - name: list images
+        run: docker images
 
       - name: Sign the published Docker image
         if: ${{ github.event_name != 'pull_request' }}
