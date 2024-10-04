@@ -12,7 +12,7 @@ env:
   
 
 jobs:
-  server:
+  server-build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -64,7 +64,7 @@ jobs:
           TAGS: ${{ steps.meta.outputs.tags }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
-  clint:
+  clint-build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
