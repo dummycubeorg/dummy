@@ -34,6 +34,7 @@ jobs:
         run: |
           cd server
           npm test
+          exit 1
 
       - name: Notify on failure
         if: failure()
