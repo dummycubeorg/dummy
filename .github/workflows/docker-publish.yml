@@ -35,6 +35,14 @@ jobs:
           cd server
           npm test
 
+      - name: Send Discord notification
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{"content": "The tests run successfully!"}' \
+               ${{ secrets.DISCORD_WEBHOOK }}
+
+
   server-build:
     needs: server-test
     runs-on: ubuntu-latest
