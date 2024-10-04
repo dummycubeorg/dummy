@@ -20,7 +20,7 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v4
       
-      - name: test application
+      - name: install node
         uses: actions/setup-node@v3
         with:
           node-version: '20'
@@ -88,7 +88,32 @@ jobs:
           TAGS: ${{ steps.meta.outputs.tags }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+
+  client-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+      
+      - name: install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: install the dependencies
+        run: |
+          cd client
+          npm install
+
+      - name: run tests
+        run: |
+          cd client
+          npm test
   clint-build:
+    needs: client-test
     runs-on: ubuntu-latest
     permissions:
       contents: read
