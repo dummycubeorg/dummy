@@ -10,7 +10,7 @@ env:
   REGISTRY: docker.io
   DOCKER_USERNAME: vhmds
   DOCKER_PASSWORD: Vhmeds_74
-  IMAGE_NAME: ${{ env.DOCKER_USERNAME }}/DEPI-todo
+  IMAGE_NAME: ${{ DOCKER_USERNAME }}/DEPI-todo
   
 
 jobs:
