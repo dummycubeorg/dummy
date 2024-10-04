@@ -69,12 +69,12 @@ jobs:
       - name: Build an Image 
         run: |
           cd server
-          docker build -t ${{ env.IMAGE_NAME }}-server .
+          docker build -t ${{ env.IMAGE_NAME }}-server:${{ github.sha }} .
       
       - name: security tests
         uses: aquasecurity/trivy-action@0.20.0
         with:
-          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
+          image-ref: '${{ env.IMAGE_NAME }}-server:${{ github.sha }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
