@@ -4,11 +4,13 @@ import { db } from "../../db/db";
 import { users, todos } from "../../db/index";
 import { eq, or, and } from "drizzle-orm";
 import argon2 from "argon2";
-import { createAccessToken } from "../../utils/jwt";
+import { createAccessToken } from "../../utils/jwt/create-token";
 import { env } from "../../env";
 import { authenticated } from "../../middlewares/auth";
 
 const v1 = Router();
+
+const JWT_SECRET = new TextEncoder().encode(env.JWT_SECRET);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -116,7 +118,7 @@ v1.post("/login", async (req: Request, res: Response) => {
       return;
     }
 
-    const token = await createAccessToken({ id: user.id });
+    const token = await createAccessToken({ id: user.id }, JWT_SECRET);
 
     res.cookie("uid", token, {
       httpOnly: true,
