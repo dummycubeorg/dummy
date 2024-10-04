@@ -12,6 +12,19 @@ env:
   
 
 jobs:
+  server-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+      
+      - name: test application
+        run: echo "testing..."
+
+      - name: building application
+        run: echo "building.."
   server-build:
     runs-on: ubuntu-latest
     permissions:
