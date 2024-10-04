@@ -69,7 +69,7 @@ jobs:
       - name: Build an Image 
         run: |
           cd server
-          docker build -t docker.io/${{ env.IMAGE_NAME }}-server .
+          docker build -t ${{ env.IMAGE_NAME }}-server .
       
       - name: security tests
         uses: aquasecurity/trivy-action@0.20.0
