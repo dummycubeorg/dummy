@@ -232,6 +232,37 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{ 
+                    "embeds": [
+                      {
+                        "title": "Deployment Notification",
+                        "description": "The building process of server is failed !",
+                        "color": 16711680
+                      }
+                    ]
+                  }' \
+               ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Send Discord notification
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{ 
+                    "embeds": [
+                      {
+                        "title": "Deployment Notification",
+                        "description": "The building process of server run successfully ",
+                        "color": 65280
+                      }
+                    ]
+                  }' \
+               ${{ secrets.DISCORD_WEBHOOK }}
 
       - name: Sign the published Docker image
         if: ${{ github.event_name != 'pull_request' }}
