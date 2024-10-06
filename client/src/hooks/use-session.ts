@@ -24,7 +24,9 @@ const getUser = async (): Promise<UserSession | null> => {
 };
 
 export function useSession() {
-  const { data, error, isLoading } = useSWR("/api/v1/me", getUser);
+  const { data, error, isLoading } = useSWR("/api/v1/me", getUser, {
+    errorRetryInterval: 15000,
+  });
 
   return useMemo(() => {
     if (isLoading) {
