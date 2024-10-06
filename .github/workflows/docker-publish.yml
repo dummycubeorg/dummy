@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: docker.io
-  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/DEPI-todo
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/depi-todo
   
 
 jobs:
@@ -20,12 +20,55 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v4
       
-      - name: test application
-        run: echo "testing..."
+      - name: install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-      - name: building application
-        run: echo "building.."
+      - name: install the dependencies
+        run: |
+          cd server
+          npm install
+
+      - name: run tests
+        run: |
+          cd server
+          npm test
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{ 
+                    "embeds": [
+                      {
+                        "title": "Deployment Notification",
+                        "description": "The tests are failed !",
+                        "color": 16711680
+                      }
+                    ]
+                  }' \
+               ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Send Discord notification
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{ 
+                    "embeds": [
+                      {
+                        "title": "Deployment Notification",
+                        "description": "The tests run successfully ",
+                        "color": 65280
+                      }
+                    ]
+                  }' \
+               ${{ secrets.DISCORD_WEBHOOK }}
+
+
   server-build:
+    needs: server-test
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,12 +97,29 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+
+      - name: Build an Image 
+        run: |
+          cd server
+          docker build -t ${{ env.IMAGE_NAME }}-server:${{ github.sha }} .
+      
+      - name: security tests
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: '${{ env.IMAGE_NAME }}-server:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+        continue-on-error: true
+
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-server
-
+  
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v5
@@ -71,12 +131,46 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{ 
+                    "embeds": [
+                      {
+                        "title": "Deployment Notification",
+                        "description": "The building process of server is failed !",
+                        "color": 16711680
+                      }
+                    ]
+                  }' \
+               ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Send Discord notification
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{ 
+                    "embeds": [
+                      {
+                        "title": "Deployment Notification",
+                        "description": "The building process of server run successfully ",
+                        "color": 65280
+                      }
+                    ]
+                  }' \
+               ${{ secrets.DISCORD_WEBHOOK }}
+      
+
       - name: Sign the published Docker image
         if: ${{ github.event_name != 'pull_request' }}
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+
   clint-build:
     runs-on: ubuntu-latest
     permissions:
@@ -105,6 +199,22 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build an Image 
+        run: |
+          cd client
+          docker build -t ${{ env.IMAGE_NAME }}-client:${{ github.sha }} .
+      
+      - name: security tests
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: '${{ env.IMAGE_NAME }}-client:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+        continue-on-error: true
 
       - name: Extract Docker metadata
         id: meta
@@ -122,6 +232,37 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{ 
+                    "embeds": [
+                      {
+                        "title": "Deployment Notification",
+                        "description": "The building process of server is failed !",
+                        "color": 16711680
+                      }
+                    ]
+                  }' \
+               ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Send Discord notification
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{ 
+                    "embeds": [
+                      {
+                        "title": "Deployment Notification",
+                        "description": "The building process of server run successfully ",
+                        "color": 65280
+                      }
+                    ]
+                  }' \
+               ${{ secrets.DISCORD_WEBHOOK }}
 
       - name: Sign the published Docker image
         if: ${{ github.event_name != 'pull_request' }}
