@@ -13,6 +13,10 @@ RUN npm ci
 # Copy the rest of the application code
 COPY . .
 
+# Set the API URL (as it is injected at build time)
+ARG API_URL=invalid
+ENV VITE_API_URL=${API_URL}
+
 # Build the project
 RUN npm run build
 
@@ -27,4 +31,3 @@ EXPOSE 80
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
-
