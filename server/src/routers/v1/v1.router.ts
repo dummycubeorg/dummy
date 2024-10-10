@@ -122,7 +122,7 @@ v1.post("/login", async (req: Request, res: Response) => {
 
     res.cookie("uid", token, {
       httpOnly: true,
-      secure: false, // env.NODE_ENV === "production"
+      secure: env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
       maxAge: 1000 * 60 * 60 * 24,
