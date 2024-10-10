@@ -1,0 +1,3 @@
+postgresql/postgresql-secret.yml
+server/server-secret.yml
+cert-manager/issuer.yml

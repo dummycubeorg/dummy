@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-config
+data:
+  client-protocol: "https"
+  client-host: "iamindev.xyz"

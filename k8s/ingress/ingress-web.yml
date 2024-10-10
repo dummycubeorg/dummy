@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-web
+spec:
+  tls:
+    - hosts:
+        - iamindev.xyz
+        - api.iamindev.xyz
+      secretName: iamindev-tls
+  ingressClassName: nginx
+  rules:
+    - host: iamindev.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: client-service
+                port:
+                  number: 80
+    - host: api.iamindev.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: server-service
+                port:
+                  number: 5000

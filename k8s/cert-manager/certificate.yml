@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: iamindev-crt
+spec:
+  secretName: iamindev-tls
+  dnsNames:
+    - iamindev.xyz
+    - api.iamindev.xyz
+  issuerRef:
+    name: letsencrypt-issuer
+    kind: ClusterIssuer
