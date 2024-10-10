@@ -1,0 +1,4 @@
+creation_rules:
+  - path_regex: (issuer|.*-secret)\.ya?ml$
+    age: >-
+      age1d0kelcg0mnkra3tngsfr948zkeqrd23uxcdxs0pwl2vh4j3ruskstg6drc
