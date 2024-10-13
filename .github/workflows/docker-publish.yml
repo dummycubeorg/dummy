@@ -126,8 +126,8 @@ jobs:
         with:
           context: server
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ github.run_id }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ github.run_id }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
