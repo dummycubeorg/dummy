@@ -234,6 +234,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            API_URL=${{ env.API_URL }}
           
       - name: Notify on failure
         if: failure()
