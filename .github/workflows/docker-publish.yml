@@ -283,12 +283,14 @@ jobs:
           # Replace the image tags in your Kubernetes YAML files.
           cd k8s
           ls
+          cat k8s/server/server-deployment.yml
           sed -i 's|image: ${IMAGE_NAME}-server:.*|image: ${REGISTRY}/${IMAGE_NAME}-server:${{ github.run_id }}|' k8s/server/server-deployment.yml
           sed -i 's|image: ${IMAGE_NAME}-client:.*|image: ${REGISTRY}/${IMAGE_NAME}-client:${{ github.run_id }}|' k8s/client/client-deployment.yml
           cat k8s/server/server-deployment.yml
       
       - name: Commit Changes
         run: |
+          cd k8s
           git config --local user.name "GitHub Actions"
           git config --local user.email "actions@github.com"
           git add k8s-config/
