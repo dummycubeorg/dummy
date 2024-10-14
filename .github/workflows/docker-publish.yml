@@ -281,9 +281,8 @@ jobs:
       - name: Update Image Tags
         run: |
           # Replace the image tags in your Kubernetes YAML files.
-          pwd
+          cd k8s
           ls
-          ls k8s
           sed -i 's|image: ${IMAGE_NAME}-server:.*|image: ${REGISTRY}/${IMAGE_NAME}-server:${{ github.run_id }}|' k8s/server/server-deployment.yml
           sed -i 's|image: ${IMAGE_NAME}-client:.*|image: ${REGISTRY}/${IMAGE_NAME}-client:${{ github.run_id }}|' k8s/client/client-deployment.yml
       
