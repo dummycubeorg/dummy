@@ -264,5 +264,36 @@ jobs:
                     ]
                   }' \
                ${{ secrets.DISCORD_WEBHOOK }}
+  update-k8s-configs:
+    needs: [clint-build, server-build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Kubernetes Config Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.K8S_CONFIG_REPO }}  # The repo containing the Kubernetes configurations
+          token: ${{ secrets.TOKEN }}  # Use a GitHub token for authentication
+          path: k8s
+      
+      - name: Update Image Tags
+        run: |
+          # Replace the image tags in your Kubernetes YAML files.
+          sed -i 's|image: ${IMAGE_NAME}-server:.*|image: ${REGISTRY}/${IMAGE_NAME}-server:${{ github.run_id }}|' k8s/server/server-deployment.yaml
+          sed -i 's|image: ${IMAGE_NAME}-client:.*|image: ${REGISTRY}/${IMAGE_NAME}-client:${{ github.run_id }}|' k8s/client/client-deployment.yaml
+      
+      - name: Commit Changes
+        run: |
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "actions@github.com"
+          git add k8s-config/
+          git commit -m "Update Kubernetes deployment images to latest tags" || echo "No changes to commit"
+      - name: Push Changes
+        run: |
+          git push origin main
+          
+
 
 
