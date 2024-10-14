@@ -219,6 +219,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-client
+          tags: |
+            latest
+            ${{ github.run_id }}
 
       - name: Build and push Docker image
         id: build-and-push
