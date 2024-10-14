@@ -294,6 +294,7 @@ jobs:
           git commit -m "Update Kubernetes deployment images to latest tags" || echo "No changes to commit"
       - name: Push Changes
         run: |
+          cd k8s
           git push origin main
           
 
