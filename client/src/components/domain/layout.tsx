@@ -3,7 +3,6 @@ import Header from "./header";
 import Container from "./container";
 import { Toaster } from "../ui/sonner";
 import { useSession } from "@/hooks/use-session";
-import { LucideLoader2 } from "lucide-react";
 import { Redirect } from "wouter";
 
 type Props = {
@@ -12,7 +11,7 @@ type Props = {
 };
 
 const Layout: FC<Props> = ({ children, protectedPage = false }) => {
-  const { user, isLoading } = useSession();
+  const { user } = useSession();
 
   return (
     <div className="min-h-screen">
