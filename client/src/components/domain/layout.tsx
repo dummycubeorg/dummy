@@ -3,7 +3,6 @@ import Header from "./header";
 import Container from "./container";
 import { Toaster } from "../ui/sonner";
 import { useSession } from "@/hooks/use-session";
-import { LucideLoader2 } from "lucide-react";
 import { Redirect } from "wouter";
 
 type Props = {
@@ -12,7 +11,7 @@ type Props = {
 };
 
 const Layout: FC<Props> = ({ children, protectedPage = false }) => {
-  const { user, isLoading } = useSession();
+  const { user } = useSession();
 
   return (
     <div className="min-h-screen">
@@ -20,24 +19,16 @@ const Layout: FC<Props> = ({ children, protectedPage = false }) => {
       <main className="min-h-[calc(100vh-4rem)] bg-slate-50">
         <Container>
           {protectedPage ? (
-            isLoading ? (
-              <section className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-                <LucideLoader2 className="h-9 w-9 animate-spin text-black" />
-              </section>
-            ) : user ? (
+            user ? (
               children
             ) : (
               <Redirect to="/login" replace />
             )
-          ) : isLoading ? (
-            <section className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-              <LucideLoader2 className="h-9 w-9 animate-spin text-black" />
-            </section>
-          ) : user ? (
+          ) : (user ? (
             <Redirect to="/todos" replace />
           ) : (
             children
-          )}
+          ))}
         </Container>
       </main>
       <Toaster />
